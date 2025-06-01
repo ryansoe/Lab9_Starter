@@ -100,9 +100,209 @@
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
-    // Start your code here
-    // You may move this JS to another file if you wish
+    errorBtns[0].addEventListener('click', () => {
+      console.log('Console Log Demo');
+    });
+
+    errorBtns[1].addEventListener('click', () => {
+      console.error('Console Error Demo');
+    });
+
+    let count = 0;
+    errorBtns[2].addEventListener('click', () => {
+      count++;
+      console.count('Console Count Demo');
+    });
+
+    errorBtns[3].addEventListener('click', () => {
+      console.warn('Console Warn Demo');
+    });
+
+    let number = 2;
+    errorBtns[4].addEventListener('click', () => {
+      console.assert(count == 3, 'number: ' + number + ' does not equal 3');
+    });
+
+    errorBtns[5].addEventListener('click', () => {
+      console.clear();
+    });
+
+    errorBtns[6].addEventListener('click', () => {
+    });
+
+    errorBtns[7].addEventListener('click', () => {
+      console.dirxml(document.querySelector('main'));
+    });
+
+    errorBtns[8].addEventListener('click', () => {
+      console.group('Demo Group');
+      console.log('This is inside the group');
+      console.log('Another message in the group');
+    });
+
+    errorBtns[9].addEventListener('click', () => {
+      console.groupEnd();
+      console.log('This is outside the group');
+    });
+
+    errorBtns[10].addEventListener('click', () => {
+      const tableData = [
+        { name: 'John', age: 30, city: 'New York' },
+        { name: 'Jane', age: 25, city: 'Los Angeles' },
+        { name: 'Bob', age: 35, city: 'Chicago' }
+      ];
+      console.table(tableData);
+    });
+
+    errorBtns[11].addEventListener('click', () => {
+      console.time('Demo Timer');
+      console.log('Timer started!');
+    });
+
+    errorBtns[12].addEventListener('click', () => {
+      console.timeEnd('Demo Timer');
+      console.log('Timer ended!');
+    });
+
+    errorBtns[13].addEventListener('click', () => {
+      function nestedFunction() {
+        function deeperFunction() {
+          console.trace('Trace from deep function');
+        }
+        deeperFunction();
+      }
+      nestedFunction();
+    });
+
+    errorBtns[14].addEventListener('click', () => {
+      throw new Error('This is a deliberate global error for testing!');
+    });
+
+    function tryCatchDemo() {
+      try {
+        console.log('Trying to access a non-existent element...');
+        let nonExistentElement = document.querySelector('#does-not-exist');
+        nonExistentElement.innerHTML = 'This will fail';
+      } catch (error) {
+        console.error('Caught an error:', error.message);
+        console.log('Error handled gracefully');
+      } finally {
+        console.log('Finally block always executes');
+      }
+    }
+
+    let tryButton = document.createElement('button');
+    tryButton.textContent = 'Try/Catch Demo';
+    tryButton.addEventListener('click', tryCatchDemo);
+    document.querySelector('#error-btns').appendChild(tryButton);
+
+    class CustomCalculatorError extends Error {
+      constructor(message, errorCode) {
+        super(message);
+        this.name = 'CustomCalculatorError';
+        this.errorCode = errorCode;
+        this.timestamp = new Date().toISOString();
+      }
+    }
+
+    function customErrorDemo() {
+      try {
+        throw new CustomCalculatorError('Division by zero is not allowed!', 'CALC_001');
+      } catch (error) {
+        if (error instanceof CustomCalculatorError) {
+          console.error('Custom Error Caught:');
+          console.error('Name:', error.name);
+          console.error('Message:', error.message);
+          console.error('Error Code:', error.errorCode);
+          console.error('Timestamp:', error.timestamp);
+          console.error('Stack:', error.stack);
+        } else {
+          console.error('Unknown error:', error);
+        }
+      }
+    }
+
+    let customErrorButton = document.createElement('button');
+    customErrorButton.textContent = 'Custom Error Demo';
+    customErrorButton.addEventListener('click', customErrorDemo);
+    document.querySelector('#error-btns').appendChild(customErrorButton);
+
+    window.addEventListener('error', function(event) {
+      console.log('🚨 Global error caught!');
+      console.log('Message:', event.message);
+      console.log('Filename:', event.filename);
+      console.log('Line:', event.lineno);
+      console.log('Column:', event.colno);
+      console.log('Error object:', event.error);
+      
+      return true;
+    });
+
+    window.addEventListener('unhandledrejection', function(event) {
+      console.log('🚨 Unhandled promise rejection caught!');
+      console.log('Reason:', event.reason);
+      event.preventDefault();
+    });
+
+    let originalForm = document.querySelector('form');
+    originalForm.addEventListener('submit', e => {
+      e.preventDefault();
+      let output = document.querySelector('output');
+      let firstNum = document.querySelector('#first-num').value;
+      let secondNum = document.querySelector('#second-num').value;
+      let operator = document.querySelector('#operator').value;
+      
+      try {
+        if (firstNum === '' || secondNum === '') {
+          throw new CustomCalculatorError('Both numbers are required!', 'CALC_002');
+        }
+        
+        let num1 = parseFloat(firstNum);
+        let num2 = parseFloat(secondNum);
+        
+        if (isNaN(num1) || isNaN(num2)) {
+          throw new CustomCalculatorError('Please enter valid numbers!', 'CALC_003');
+        }
+        
+        if (operator === '/' && num2 === 0) {
+          throw new CustomCalculatorError('Division by zero is not allowed!', 'CALC_001');
+        }
+        
+        let result = eval(`${num1} ${operator} ${num2}`);
+        output.innerHTML = result;
+        output.style.color = 'black';
+        
+      } catch (error) {
+        if (error instanceof CustomCalculatorError) {
+          output.innerHTML = `Error: ${error.message} (Code: ${error.errorCode})`;
+          output.style.color = 'red';
+          console.error('Calculator Error:', error);
+        } else {
+          output.innerHTML = 'An unexpected error occurred';
+          output.style.color = 'red';
+          console.error('Unexpected Error:', error);
+        }
+      } finally {
+        console.log('Calculation attempt completed');
+      }
+    });
+
+    function promiseRejectionDemo() {
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject(new Error('This promise was rejected!'));
+        }, 1000);
+      });
+      console.log('Promise rejection demo started - check console in 1 second');
+    }
+
+    let promiseButton = document.createElement('button');
+    promiseButton.textContent = 'Promise Rejection Demo';
+    promiseButton.addEventListener('click', promiseRejectionDemo);
+    document.querySelector('#error-btns').appendChild(promiseButton);
+
   </script>
+
 </body>
 
 </html>
